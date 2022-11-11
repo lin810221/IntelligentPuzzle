@@ -23,22 +23,22 @@ class DataCleaning:
     def StandardScaler():
         scaler = StandardScaler().fit(X)
         X_scaled = scaler.transform(X)
-        return X_scaled
+        draw(X_scaled)
     
     def MinMaxScaler():
         scaler = MinMaxScaler(feature_range=(0, 1)).fit(X)
         X_scaled = scaler.transform(X)
-        return X_scaled
+        draw(X_scaled)
     
     def MaxAbsScaler():
         scaler = MaxAbsScaler().fit(X)
         X_scaled = scaler.transform(X)
-        return X_scaled
+        draw(X_scaled)
     
     def RobustScaler():
         scaler = RobustScaler().fit(X)
         X_scaled = scaler.transform(X)
-        return X_scaled
+        draw(X_scaled)
 
 def draw(X_scaled):
     print('資料集 X 的平均值：', X.mean(axis=0))
@@ -53,7 +53,8 @@ def draw(X_scaled):
         sns.distplot(X_scaled[:, i], ax = axes[i])
         axes[i].set(xlabel = rolName[i], title = "Distribution of " + rolName[i])
 
-draw(DataCleaning.MaxAbsScaler())
-draw(DataCleaning.MinMaxScaler())
-draw(DataCleaning.RobustScaler())
-draw(DataCleaning.StandardScaler())
+
+DataCleaning.StandardScaler()
+DataCleaning.MaxAbsScaler()
+DataCleaning.MinMaxScaler()
+DataCleaning.RobustScaler()
