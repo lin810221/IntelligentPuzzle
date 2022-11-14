@@ -61,17 +61,10 @@ def TestItem(case):
 def TestCase(a, b = None):
     res = 'AT$' + a + '=' + (b if b else '?') + '\n'
     s.write(res.encode ('utf-8'))
-    #verifyResponse()
-    while(1):
-        cage = s.readline().decode('utf-8').split()[0]
-        if cage[0] == '$':
-            now = datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
-            print(now + ' : ' + cage)
-            break
-        else:
-            pass
+    verifyResponse()
 
-'''
+
+
 def verifyResponse():
     while(1):
         cage = s.readline().decode('utf-8').split()[0]
@@ -82,7 +75,7 @@ def verifyResponse():
         else:
             pass
             #print(cage)
-'''
+
 
 window = sg.Window(title = 'Test Console', layout = layout, return_keyboard_events=True, use_default_focus=False)
 
