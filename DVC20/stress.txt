@@ -1,2 +1,0 @@
-stress-ng: info:  [2176] dispatching hogs: 4 cpu, 2 vm
-stress-ng: info:  [2176] successful run completed in 5.16s
