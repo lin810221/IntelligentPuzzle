@@ -1,0 +1,6 @@
+python3
+pip3
+pyserial
+stress-ng
+sensors
+xrandr

@@ -1,0 +1,12 @@
+Screen:0
+eMMC:0
+V33:0
+Vbat:0
+COM1:0
+COM2:0
+COM3:0
+COM4:0
+LAN_Port:0
+WIFI:0
+Audio:0
+CPU:0
