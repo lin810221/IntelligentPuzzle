@@ -16,9 +16,8 @@ def Input_SN():
             if values['_SN_'] == '':
                 sg.popup('請輸入內控碼！', keep_on_top=True)
             else:
-                window.Close()
+                window.close()
                 return values['_SN_']
         elif event == sg.WINDOW_CLOSED:
             break
     window.close()
-#Input_SN()
