@@ -1,10 +1,40 @@
 import PySimpleGUI as sg
-import time
-import InputInfo, InputSN
+import time, datetime
+import InputInfo, InputSN, Option
 
 
 
-sg.theme('random')
+
+# 設定主題樣式
+sg.theme('DarkTanBlue')
+
+# 測試項目
+def TestItem():
+    TestItem_dict = {'_Startup_':'Startup',
+                 '_Flash_':'Flash Test',
+                 '_LED_':'LED Test',
+                 '_Buzzer_':'Buzzer Test',
+                 '_RS-485_':'RS-485',
+                 '_G-Sensor_':'G-Sensor',
+                 '_AD Conversion_':'A/D Conversion (AN1、AN2、AN3)',
+                 '_AD Convert_':'A/D Conversion (VIN,VBAT)',
+                 '_AD Cal_':'A/D Cal.',
+                 '_IO_':'I/O Test',
+                 '_OBD_':'OBD Test',
+                 '_BlueTooth_':'Blue Tooth',
+                 '_GPS_':'GPS Test',
+                 '_Charger_':'Charger Test',
+                 '_Battery_':'Battery Test',
+                 '_WIFI_':'WIFI Test',
+                 '_LTE_':'LTE Test'}
+    return TestItem_dict
+
+
+#獲取時間
+def getTime():
+    #return datetime.datetime.now().strftime('%H:%M:%S')
+    return datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
+
 
 # LED 燈號位置設計
 def LEDIndicator(key=None, radius=30):
@@ -19,28 +49,30 @@ def SetLED(window, key, color):
     graph.erase()
     graph.draw_circle((0, 0), 12, fill_color=color, line_color=color)
 
-
-
-
-def make_window(WO_Jig):
+# 主程式介面設計
+def make_window(WO_Jig, TestOption=None):
     menu_def = [['&Tool', ['&Option']]]
-    
-    TestItem_key = ['_Startup_', '_FlashTest_', '_LEDTest_',]
-    
-    TestItem_name = ['Startup', 'FlashTest', 'LEDTest',]
-    LED = []
-    
-    for i in range(len(TestItem_key)):
-        LED.append([LEDIndicator(TestItem_key[i]), sg.Text(TestItem_name[i])])
+    TestItem_dict = TestItem()
     
     
-    
+    if TestOption == None:
+        LED = []
+        for i in TestItem_dict:
+            LED.append([LEDIndicator(i), sg.Text(TestItem_dict.get(i))])
+    else:
+        LED = [[LEDIndicator('_Startup_'), sg.Text('Startup')]]
+        for i in TestOption:
+            if TestOption.get(i) == True:
+                LED.append([LEDIndicator(i), sg.Text(TestItem_dict.get(i))])
+            else:
+                continue
+
     # 馬錶
     layout_Timer = [[sg.Text('TIME', font='Young 30 bold', key='_Timer_', visible=True)]]
     
     # 工單與治具
     layout_WOJ = [[sg.Text(f'工單：{WO_Jig[0]} / 治具：{WO_Jig[1]}',
-                           font='Young 16' , key='_WOJ_', visible=True)]]
+                           font='Young 16 bold' , key='_WOJ_', text_color='yellow', visible=True)]]
     
     # 判定結果
     layout_Criteria = [[sg.Text('TEST', font='Young 30 bold', key = '_Criteria_', visible=True)]]
@@ -51,12 +83,12 @@ def make_window(WO_Jig):
                                                       scrollable = True,
                                                       vertical_scroll_only = True,
                                                       expand_x = True,
-                                                      expand_y = True
+                                                      expand_y = True,
                                                       )
                                             ]],
                                  size=(200, 480),
                                  expand_x=True,
-                                 expand_y=True
+                                 expand_y=True,
                                  ),
                         ]]
     
@@ -81,7 +113,7 @@ def make_window(WO_Jig):
     # 動作
     layout_Action = sg.Column(
         [[sg.Frame('Action',
-                   [[sg.Column([[sg.Button('F1'), sg.Button('F2')]],
+                   [[sg.Column([[sg.Button('F1', size=10), sg.Button('F2', size=10)]],
                                expand_x=True, expand_y=True
                                )]],
                    expand_x=True, expand_y=True)
@@ -120,60 +152,70 @@ def main():
     
     active = False
     window =  make_window(WO_Jig)
+    TestItem_dict = TestItem()
     while True:
         event, values = window.read(timeout=1000)
         if event in ['F1', 'F1:112']:
             SN = InputSN.Input_SN()
-            if SN != None:
-                window['_output_'].update('Hi\n', append=True)
+            if SN != None:  # 開始測試
+                window['_output_'].update('Start Testing\n', append=False)
                 start_time = time.time()
                 active = True
                 window['_Criteria_'].update('TESTING', text_color = 'DodgerBlue')
-
+                
+                
+                for i in TestItem_dict:
+                    SetLED(window, i, 'gray')
+                
             else:
-                break
-        
+                continue
+            
+        if event in ['F2', 'F2:113']:
+            pass
+
         if active == True:
             elapsed_time = round(time.time()-start_time)
-            window['_Timer_'].update('{:02d}:{:02d}'.format((elapsed_time // 100)%60,
-                                                            elapsed_time % 100),
+            window['_Timer_'].update('{:02d}:{:02d}'.format(elapsed_time // 60, elapsed_time % 60),
                                      text_color = 'DodgerBlue')
+            if elapsed_time >= 5:
+                window['_Criteria_'].update('PASS', text_color = 'green1')
+                window['_Timer_'].update(text_color = 'green1')
+                window['_output_'].update(getTime() + ' : ', append=True)
+                window['_output_'].update('Pass\n', text_color_for_value='Green1', append=True)
+                ans = 0
+                for i in TestItem_dict:
+                    SetLED(window, i, 'green1' if ans == 0 else 'red')
+            
             if elapsed_time >= 20:
                 active = False
                 window['_Criteria_'].update('FAIL', text_color = 'red')
                 window['_Timer_'].update(text_color = 'red')
+                window['_output_'].update(getTime() + ' : ', append=True)
+                window['_output_'].update('Fail\n', text_color_for_value='Red', append=True)
+                ans = 1
+                for i in TestItem_dict:
+                    SetLED(window, i, 'green1' if ans == 0 else 'red')
             
             #print(elapsed_time)
         
-        
         if event == 'Option':
-            left = [[sg.Checkbox('Flash Test', key=None)],
-                     [sg.Checkbox('RS485 Test')],
-                     [sg.Checkbox('GPS Test')],
-                     [sg.Checkbox('G-Sensor self')],
-                     [sg.Checkbox('A/D Conversion (AN1, AN2, AN3)')],
-                     [sg.Checkbox('A/D Convert (VIN, VBA)')],
-                     [sg.Checkbox('A/D Cal.')],
-                     [sg.Checkbox('I/O Test')],]
+            TestOption = Option.Option()
+            if TestOption != None:  
+                TestItem_dict = TestItem()
+                for i in TestOption:
+                    if TestOption.get(i) == False:
+                        del TestItem_dict[i]
+                    else:
+                        continue
+                    
+                print(TestOption)
+                window.close()
+                window = make_window(WO_Jig, TestOption=TestOption)
+            else:
+                continue
             
-            right = [[sg.Checkbox('Blue Tooth')],
-                      [sg.Checkbox('WIFI Test')],
-                      [sg.Checkbox('LTE Test')],
-                      [sg.Checkbox('OBD Test')],
-                      [sg.Checkbox('LED Test')],
-                      [sg.Checkbox('Buzzer Test')],
-                      [sg.Checkbox('Charger Test')],
-                      [sg.Checkbox('Battery Test')],]
             
-            layout = [[sg.Checkbox('All checked', enable_events=False),
-                       sg.Checkbox('All unchecked', enable_events=False),],
-                      [sg.HorizontalSeparator()],
-                      [sg.Column(left), sg.Column(right)],
-                      [sg.OK(), sg.Cancel('Cancel')]]
-            event, values = sg.Window('Option', layout = layout, no_titlebar=True, keep_on_top=True).read(close=True)
             
-            if event == 'OK':
-                window.refresh()    # 可強制更新 GUI 而不被等待計時所干擾
         
         '''
         if event == 'F5:116':
@@ -185,5 +227,6 @@ def main():
 
     
     window.close()
+    del window
 if __name__ == '__main__':
     main()
