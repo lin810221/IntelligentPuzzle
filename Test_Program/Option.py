@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import main
 
 
 '''
@@ -9,23 +10,12 @@ TestItem_key = ['_Startup_', '_Flash_', '_LED_',
                 '_GPS_', '_LTE_', '_WIFI_',
                 '_Charger_', '_Battery_']
 '''
-TestItem_dict = {'_Startup_':'Startup',
-                 '_Flash_':'Flash Test',
-                 '_LED_':'LED Test',
-                 '_Buzzer_':'Buzzer Test',
-                 '_RS-485_':'RS-485',
-                 '_G-Sensor_':'G-Sensor',
-                 '_AD Conversion_':'A/D Conversion (AN1、AN2、AN3)',
-                 '_AD Convert_':'A/D Conversion (VIN,VBAT)',
-                 '_AD Cal_':'A/D Cal.',
-                 '_IO_':'I/O Test',
-                 '_OBD_':'OBD Test',
-                 '_BlueTooth_':'Blue Tooth',
-                 '_GPS_':'GPS Test',
-                 '_Charger_':'Charger Test',
-                 '_Battery_':'Battery Test',
-                 '_WIFI_':'WIFI Test',
-                 '_LTE_':'LTE Test'}
+
+# 載入產測資訊
+TestItem_dict = main.TestItem()
+
+
+
 
 def pre():
     count = 0

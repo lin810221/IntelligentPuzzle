@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import time, datetime
 import InputInfo, InputSN, Option
+import serial
 
 
 
@@ -10,6 +11,7 @@ sg.theme('DarkTanBlue')
 
 # 測試項目
 def TestItem():
+    '''
     TestItem_dict = {'_Startup_':'Startup',
                  '_Flash_':'Flash Test',
                  '_LED_':'LED Test',
@@ -27,6 +29,11 @@ def TestItem():
                  '_Battery_':'Battery Test',
                  '_WIFI_':'WIFI Test',
                  '_LTE_':'LTE Test'}
+    '''
+    TestItem_dict = {'_Startup_':'Startup',
+                     '_LED_':'LED Test',
+                     '_RS-485_':'RS-485',}
+    
     return TestItem_dict
 
 
@@ -91,7 +98,7 @@ def make_window(WO_Jig, TestOption=None):
                                  expand_y=True,
                                  ),
                         ]]
-    
+
     # 輸出框
     layout_Console = [[sg.Frame('Output', 
                                 layout = [[sg.Multiline(size = (75, 25),
@@ -106,20 +113,23 @@ def make_window(WO_Jig, TestOption=None):
                                                         ),
                                            ]],
                                 expand_x=True,
-                                expand_y=True
-                                )
+                                expand_y=True,
+                                ),
                        ]]
 
     # 動作
     layout_Action = sg.Column(
         [[sg.Frame('Action',
-                   [[sg.Column([[sg.Button('F1', size=10), sg.Button('F2', size=10)]],
+                   [[sg.Column([[sg.Button('Start', key='_START_',button_color='SteelBlue1' ,expand_x=True, expand_y=True),
+                                 sg.Button('F2', expand_x=True, expand_y=True, visible=False),
+                                 sg.Button('F3', expand_x=True, expand_y=True, visible=False)
+                                 ]],
                                expand_x=True, expand_y=True
                                )]],
                    expand_x=True, expand_y=True)
-          ]]
+          ]], expand_x=True
         )
-    
+
     layout = [[sg.Menu(menu_def, key='_menu_')],
               [sg.Column(layout_Timer, expand_x=True, expand_y=False, element_justification='l'),
                sg.Column(layout_WOJ, expand_x=True, expand_y=False, element_justification='c'), 
@@ -145,6 +155,14 @@ def make_window(WO_Jig, TestOption=None):
                      )
 
 def main():
+    
+    # Open Terminal
+    ser = serial.Serial(port = 'COM11',
+                      baudrate=57600,
+                      bytesize=8,
+                      parity='N',
+                      stopbits=1)
+    
     # 輸入工單號碼與治具編號
     WO_Jig = InputInfo.Input_WO_Jig()
     if WO_Jig == None:
@@ -155,23 +173,19 @@ def main():
     TestItem_dict = TestItem()
     while True:
         event, values = window.read(timeout=1000)
-        if event in ['F1', 'F1:112']:
+        if event in ['F1:112', '_START_']:
             SN = InputSN.Input_SN()
             if SN != None:  # 開始測試
                 window['_output_'].update('Start Testing\n', append=False)
                 start_time = time.time()
                 active = True
                 window['_Criteria_'].update('TESTING', text_color = 'DodgerBlue')
-                
-                
+                          
                 for i in TestItem_dict:
                     SetLED(window, i, 'gray')
-                
+
             else:
                 continue
-            
-        if event in ['F2', 'F2:113']:
-            pass
 
         if active == True:
             elapsed_time = round(time.time()-start_time)
@@ -195,38 +209,31 @@ def main():
                 ans = 1
                 for i in TestItem_dict:
                     SetLED(window, i, 'green1' if ans == 0 else 'red')
-            
-            #print(elapsed_time)
-        
+                   
         if event == 'Option':
-            TestOption = Option.Option()
-            if TestOption != None:  
-                TestItem_dict = TestItem()
+            TestOption = Option.Option()    # 儲存被選擇之測項
+            if TestOption != None:          # 有存取東西時...
+                TestItem_dict = TestItem()  # 刷新為所有測項進行比對作業
                 for i in TestOption:
                     if TestOption.get(i) == False:
                         del TestItem_dict[i]
                     else:
                         continue
-                    
+
                 print(TestOption)
                 window.close()
                 window = make_window(WO_Jig, TestOption=TestOption)
-            else:
+            else:                           # 無存取任何東西時什麼都不做
                 continue
             
-            
-            
-        
-        '''
-        if event == 'F5:116':
-            window['_output_'].update(value='')
-        '''
-            
         if event == sg.WINDOW_CLOSED:
+            ser.close()
             break
 
-    
+    ser.close()
     window.close()
     del window
+
+
 if __name__ == '__main__':
     main()
