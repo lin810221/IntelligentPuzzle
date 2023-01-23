@@ -52,9 +52,84 @@ def draw(X_scaled):
     for i in range(n):
         sns.distplot(X_scaled[:, i], ax = axes[i])
         axes[i].set(xlabel = rolName[i], title = "Distribution of " + rolName[i])
+    plt.show()
 
 
 DataCleaning.StandardScaler()
 DataCleaning.MaxAbsScaler()
 DataCleaning.MinMaxScaler()
 DataCleaning.RobustScaler()
+
+
+# 計算在測試集上的準確度
+from sklearn.metrics import accuracy_score, silhouette_score
+
+
+# 分割資料集
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, Class_1, test_size=0.3, random_state=0)
+
+# 邏輯回歸
+from sklearn.linear_model import LogisticRegression
+clf_lr = LogisticRegression()
+clf_lr.fit(X_train, y_train)
+y_pred_lr = clf_lr.predict(X_test)
+print("Accuracy of Logistic Regression: ", accuracy_score(y_test, y_pred_lr))
+
+# 決策樹
+from sklearn.tree import DecisionTreeClassifier
+clf_dt = DecisionTreeClassifier()
+clf_dt.fit(X_train, y_train)
+y_pred_dt = clf_dt.predict(X_test)
+print("Accuracy of Decision Tree: ", accuracy_score(y_test, y_pred_dt))
+
+# 隨機森林
+from sklearn.ensemble import RandomForestClassifier
+clf_rf = RandomForestClassifier()
+clf_rf.fit(X_train, y_train)
+y_pred_rf = clf_rf.predict(X_test)
+print("Accuracy of Random Forest: ", accuracy_score(y_test, y_pred_rf))
+
+
+# 支援向量機
+from sklearn.svm import SVC
+clf_svm = SVC()
+clf_svm.fit(X_train, y_train)
+y_pred_svm = clf_svm.predict(X_test)
+print("Accuracy of SVM: ", accuracy_score(y_test, y_pred_svm))
+
+# KNN
+from sklearn.neighbors import KNeighborsClassifier
+clf_knn = KNeighborsClassifier()
+clf_knn.fit(X_train, y_train)
+y_pred_knn = clf_knn.predict(X_test)
+print("Accuracy of KNN: ", accuracy_score(y_test, y_pred_knn))
+
+# Stacking
+from sklearn.ensemble import StackingClassifier
+estimators = [('lr', LogisticRegression()), ('dt', DecisionTreeClassifier()), ('rf', RandomForestClassifier()),('svm', SVC())]
+clf_stacking = StackingClassifier(estimators=estimators)
+clf_stacking.fit(X_train, y_train)
+y_pred_stacking = clf_stacking.predict(X_test)
+print("Accuracy of Stacking: ", accuracy_score(y_test, y_pred_stacking))
+
+# XGBoost
+from xgboost import XGBClassifier
+clf_xgb = XGBClassifier()
+clf_xgb.fit(X_train, y_train)
+y_pred_xgb = clf_xgb.predict(X_test)
+print("Accuracy of XGBoost: ", accuracy_score(y_test, y_pred_xgb))
+
+# K-Means
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=3, random_state=0).fit(X)
+print("Predicted Clusters: ", kmeans.labels_)
+
+
+# 視覺化
+models = ['Logistic Regression', 'Decision Tree', 'Random Forest', 'SVM', 'KNN','Stacking','XGBoost','K-means']
+scores = [accuracy_score(y_test, y_pred_lr), accuracy_score(y_test, y_pred_dt), accuracy_score(y_test, y_pred_rf), accuracy_score(y_test, y_pred_svm), accuracy_score(y_test, y_pred_knn), accuracy_score(y_test, y_pred_stacking),accuracy_score(y_test, y_pred_xgb), silhouette_score(X, kmeans.labels_)]
+
+plt.bar(models, scores)
+plt.ylabel('Accuracy')
+plt.show()
