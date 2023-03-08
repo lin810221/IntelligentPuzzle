@@ -65,11 +65,11 @@ institutional_investors_stock = crawler(info); print(institutional_investors_sto
 ########################################################################################
 #                                    主力進出
 ########################################################################################
+
 url = 'https://tw.stock.yahoo.com/quote/5425.TWO/broker-trading'
 res = requests.get(url)
 html = res.content.decode()
 element = etree.HTML(html)
-
 #更新時間
 update_time = element.xpath('//*[@id="main-3-QuoteChipMajor-Proxy"]/div/div[1]/span/time/span[2]/text()')
 
@@ -127,3 +127,65 @@ info = {'url':'https://tw.stock.yahoo.com/quote/5425.TWO/major-holders',
 
 major_holders = crawler(info)
 print(major_holders)
+
+
+########################################################################################
+#                                    營收表
+########################################################################################
+info = {'url':'https://tw.stock.yahoo.com/quote/5425.TWO/revenue',
+        'update_time':'//*[@id="main-0-QuoteHeader-Proxy"]/div/div/div/span/text()',
+        'title':'//*[@id="qsp-revenue-table"]/div/div/div/div[1]/div/div/ul/li/text()',
+        'index':'//*[@id="qsp-revenue-table"]/div/div/div/div[2]/ul/li/div/div[1]/div[1]/text()',
+        'data':'//*[@id="qsp-revenue-table"]/div/div/div/div[2]/ul/li/div/div/ul/li/span/text()'}
+revenue = crawler(info)
+print(revenue)
+
+########################################################################################
+#                                    每股盈餘
+########################################################################################
+
+info = {'url':'https://tw.stock.yahoo.com/quote/5425.TWO/eps',
+        'update_time':'//*[@id="main-0-QuoteHeader-Proxy"]/div/div[2]/div[1]/span/text()',
+        'title':'//*[@id="qsp-eps-table"]/div/div/div/div[1]/div/text()',
+        'index':'//*[@id="qsp-eps-table"]/div/div/div/div/ul/li/div/div/div/text()',
+        'data':'//*[@id="qsp-eps-table"]/div/div/div/div[2]/ul/li/div/div/span/text()'}
+
+eps = crawler(info)
+print(eps)
+
+########################################################################################
+#                                    損益表
+########################################################################################
+info = {'url':'https://tw.stock.yahoo.com/quote/5425.TWO/income-statement',
+        'update_time':'//*[@id="main-0-QuoteHeader-Proxy"]/div/div[2]/div[1]/span/text()',
+        'title':'//*[@id="qsp-income-statement-table"]/div/div/div/div[1]/div/text()',
+        'index':'//*[@id="qsp-income-statement-table"]/div/div/div/div[2]/ul/li/div/div[1]/div[1]/span/text()',
+        'data':'//*[@id="qsp-income-statement-table"]/div/div/div/div[2]/ul/li/div/div/span/text()'}
+
+income_statement = crawler(info)
+print(income_statement)
+
+
+########################################################################################
+#                                    資產負債表
+########################################################################################
+info = {'url':'https://tw.stock.yahoo.com/quote/5425.TWO/balance-sheet',
+        'update_time':'//*[@id="main-0-QuoteHeader-Proxy"]/div/div[2]/div[1]/span/text()',
+        'title':'//*[@id="qsp-balance-sheet-table"]/div/div/div/div[1]/div/text()',
+        'index':'//*[@id="qsp-balance-sheet-table"]/div/div/div/div[2]/ul/li/div/div[1]/div[1]/span/text()',
+        'data':'//*[@id="qsp-balance-sheet-table"]/div/div/div/div[2]/ul/li/div/div/span/text()'}
+
+balance_sheet = crawler(info)
+print(balance_sheet)
+
+########################################################################################
+#                                    現金流量表
+########################################################################################
+info = {'url':'https://tw.stock.yahoo.com/quote/5425.TWO/cash-flow-statement',
+        'update_time':'//*[@id="main-0-QuoteHeader-Proxy"]/div/div[2]/div[1]/span/text()',
+        'title':'//*[@id="qsp-cash-flow-statement-table"]/div/div/div/div[1]/div/text()',
+        'index':'//*[@id="qsp-cash-flow-statement-table"]/div/div/div/div[2]/ul/li/div/div[1]/div[1]/span/text()',
+        'data':'//*[@id="qsp-cash-flow-statement-table"]/div/div/div/div[2]/ul/li/div/div/span/text()'}
+
+cash_flow_state = crawler(info)
+print(cash_flow_state)
