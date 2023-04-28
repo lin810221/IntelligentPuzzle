@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define DIVIDE printf("================================================================\n")
 
 void set_IP();
 
 int main(void) {
+    char op[10];
     while (1) {
-        char op;
         DIVIDE;
         printf("(1) Show ipmiitool IP\n");
         printf("(2) IP setting\n");
@@ -15,55 +16,45 @@ int main(void) {
         printf("(4) Remote\n");
         printf("(q) Leave\n");
         printf("Option:");
-        scanf("%s", &op);  // 修正 %s 為 %c
+        fgets(op, sizeof(op), stdin);
+        op[strlen(op)-1] = '\0';
         DIVIDE;
 
-        if(op == '1'){
+        if (strcmp(op, "1") == 0) {
             printf("What are you looking for!\n");
-        }
-        else if(op == '2'){
-        	//printf("What are you looking for!\n");
+        } else if (strcmp(op, "2") == 0) {
             set_IP();
-        }
-        else if(op == 'q'){
+        } else if (strcmp(op, "q") == 0) {
             break;
-        }
-        else{
+        } else {
             printf("Wrong!\n");
         }
     }
 
-    system("pause");
+    printf("Press Enter to exit...");
+    while (getchar() != '\n');
     return 0;
 }
 
 void set_IP() {
-    
+    char op_IP[10];
     while(1){
-    	char op_IP;
-    	DIVIDE;
-	    printf("(1) Static\n");
-	    printf("(2) DHCP\n");
-	    printf("(q) Go back\n");
-	    printf("Option:");
-	    scanf("%s", &op_IP);  // 修正 %s 為 %c
-	    DIVIDE;
-	    if(op_IP == '1'){
-	        printf("Static!\n");
-	        continue;
-	    }
-	    else if(op_IP == '2'){
-	        printf("DHCP!\n");
-			continue; 
-	    }
-	    else if(op_IP == 'q'){
-	        break;
-	    }
-	    else{
-	        printf("Wrong!\n");
-	        continue;
-	    }
-	}
-    
+        DIVIDE;
+        printf("(1) Static\n");
+        printf("(2) DHCP\n");
+        printf("(q) Go back\n");
+        printf("Option:");
+        fgets(op_IP, sizeof(op_IP), stdin);
+        op_IP[strlen(op_IP)-1] = '\0';
+        DIVIDE;
+        if (strcmp(op_IP, "1") == 0) {
+            printf("Static!\n");
+        } else if (strcmp(op_IP, "2") == 0) {
+            printf("DHCP!\n");
+        } else if (strcmp(op_IP, "q") == 0) {
+            break;
+        } else {
+            printf("Wrong!\n");
+        }
+    }
 }
-
