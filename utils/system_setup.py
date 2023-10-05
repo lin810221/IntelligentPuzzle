@@ -1,5 +1,20 @@
 import configparser
+import datetime
+import os
 import sys
+
+
+# Remove all pictures
+def remove_pic():
+    directory = './'
+    for filename in os.listdir(directory):
+        if filename.endswith('.png') and filename.startswith('(Result)'):
+            file_path = os.path.join(directory, filename)
+            os.remove(file_path)
+
+# Get current time with format setting
+def get_time(time_format):
+    return datetime.datetime.now().strftime(time_format)
 
 # ini setting config
 def get_config(ini_file):
