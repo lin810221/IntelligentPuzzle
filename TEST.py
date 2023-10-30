@@ -26,20 +26,29 @@ def get_files_name(folder_path):
 
 files = get_files_name(folder_path)
 
-otp_files = []
-flash_files = []
-
-for file_name in files:
-    if "otp" in file_name.lower():
-        otp_files.append(file_name)
+def filter_direct_name(files):
+    cache_files = []
     
-    elif "flash" in file_name.lower():
-        flash_files.append(file_name)
+    first_file = files[0]
 
-print(f'OTP LIST: {otp_files}\n')
-print(f'FLASH LIST: {flash_files}\n')
+    if 'otp' in first_file.lower():
+        for file_name in files:
+            if 'otp' not in file_name.lower():
+                print(f'Error:File {file_name} should contain "otp"')    
+            else:
+                cache_files.append(file_name)
+                
+    elif 'flash' in first_file.lower():
+        for file_name in files:
+            if 'flash' not in file_name.lower():
+                print(f'Error:File {file_name} should contain "flash"')    
+            else:
+                cache_files.append(file_name)
+    else:
+        print('The first file name does not contain "otp" or "flash"')
+                
+    return cache_files                
 
-for file_name in files:
-    base, extension = os.path.splitext(file_name)
-    print(f'BASE: {base}')
-    print(f'EXT: {extension}\n')
+
+cache_files = filter_direct_name(files)
+print(cache_files)
