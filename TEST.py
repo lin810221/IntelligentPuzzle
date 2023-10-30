@@ -36,6 +36,8 @@ for file_name in files:
     elif "flash" in file_name.lower():
         flash_files.append(file_name)
 
+print(f'OTP LIST: {otp_files}\n')
+print(f'FLASH LIST: {flash_files}\n')
 
 for file_name in files:
     base, extension = os.path.splitext(file_name)
